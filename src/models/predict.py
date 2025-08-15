@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 import joblib
-from src.data.preprocess import preprocess_data
-from src.utils.helpers import load_csv
+from ..data.preprocess import preprocess_data
+from ..utils.helpers import load_csv
 
 MODEL_PATH = os.path.join("models", "trained_model.pkl")
 

@@ -4,8 +4,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 import joblib
-from src.data.preprocess import preprocess_data
-from src.utils.helpers import load_csv
+from ..data.preprocess import preprocess_data
+from ..utils.helpers import load_csv
 
 MODEL_PATH = os.path.join("models", "trained_model.pkl")
 

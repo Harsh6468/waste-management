@@ -2,9 +2,13 @@ from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import joblib
 import os
-from src.data.preprocess import preprocess_data
+from data.preprocess import preprocess_data
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder="../templates",
+    static_folder="../static"
+    )
 
 MODEL_PATH = os.path.join("models", "trained_model.pkl")
 
