@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Waste Recycling Rate Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="brand">
+                <div class="logo">♻️</div>
+                <div>
+                    <h1>Recycling Rate Predictor</h1>
+                    <p class="subtitle">Estimate city-level recycling rates using ML</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="card">
+                <h2 class="card-title">Enter City & Waste Details</h2>
+
+                <form id="predictForm" class="grid">
+                    <!-- Row 1 -->
+                    <div class="field">
+                        <label for="city">City/District</label>
+                        <input id="city" name="City/District" type="text" placeholder="e.g., Mumbai" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="wasteType">Waste Type</label>
+                        <select id="wasteType" name="Waste Type" required>
+                            <option value="" disabled selected>Select waste type</option>
+                            <option>Plastic</option>
+                            <option>Organic</option>
+                            <option>E-Waste</option>
+                            <option>Construction</option>
+                            <option>Hazardous</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="disposal">Disposal Method</label>
+                        <select id="disposal" name="Disposal Method" required>
+                            <option value="" disabled selected>Select method</option>
+                            <option>Recycling</option>
+                            <option>Landfill</option>
+                            <option>Incineration</option>
+                            <option>Composting</option>
+                        </select>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="field">
+                        <label for="wasteGenerated">Waste Generated (Tons/Day)</label>
+                        <input id="wasteGenerated" type="number" step="0.01" min="0" placeholder="e.g., 450" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="popDensity">Population Density (People/km²)</label>
+                        <input id="popDensity" type="number" step="1" min="0" placeholder="e.g., 30000" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="efficiency">Municipal Efficiency Score (1-10)</label>
+                        <input id="efficiency" type="number" step="1" min="1" max="10" placeholder="e.g., 7" required />
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="field">
+                        <label for="cost">Cost of Waste Management (₹/Ton)</label>
+                        <input id="cost" type="number" step="0.01" min="0" placeholder="e.g., 1500" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="awareness">Awareness Campaigns Count</label>
+                        <input id="awareness" type="number" step="1" min="0" placeholder="e.g., 12" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="capacity">Landfill Capacity (Tons)</label>
+                        <input id="capacity" type="number" step="1" min="0" placeholder="e.g., 50000" required />
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="field">
+                        <label for="year">Year</label>
+                        <input id="year" type="number" step="1" min="2019" max="2030" placeholder="e.g., 2025"
+                            required />
+                    </div>
+
+                    <div class="field">
+                        <label for="lat">Landfill Lat</label>
+                        <input id="lat" type="number" step="0.000001" placeholder="e.g., 19.0760" required />
+                    </div>
+
+                    <div class="field">
+                        <label for="lon">Landfill Lon</label>
+                        <input id="lon" type="number" step="0.000001" placeholder="e.g., 72.8777" required />
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="actions">
+                        <button id="predictBtn" type="submit" class="btn primary">Predict</button>
+                        <button type="reset" class="btn ghost">Clear</button>
+                    </div>
+                </form>
+
+                <div id="status" class="status hidden">
+                    <div class="spinner"></div>
+                    <span>Predicting…</span>
+                </div>
+
+                <div id="result" class="result hidden">
+                    <h3>Predicted Recycling Rate</h3>
+                    <p class="big-number"><span id="predValue">--</span> %</p>
+                    <p class="hint">This estimate is generated by a Lasso Regression model trained on 2019–2023 data.
+                    </p>
+                </div>
+
+                <div id="errorBox" class="error hidden"></div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Built for the PWSkills Mini-Hackathon · Waste Management & Recycling in Indian Cities</p>
+        </footer>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        const statusBox = document.getElementById('status');
+        const resultBox = document.getElementById('result');
+        const errorBox = document.getElementById('errorBox');
+        const predValue = document.getElementById('predValue');
+        const predictBtn = document.getElementById('predictBtn');
+
+        function show(el) { el.classList.remove('hidden'); }
+        function hide(el) { el.classList.add('hidden'); }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hide(resultBox);
+            hide(errorBox);
+            show(statusBox);
+            predictBtn.disabled = true;
+
+            const payload = {
+                "City/District": document.getElementById('city').value.trim(),
+                "Waste Type": document.getElementById('wasteType').value,
+                "Waste Generated (Tons/Day)": Number(document.getElementById('wasteGenerated').value),
+                "Population Density (People/km²)": Number(document.getElementById('popDensity').value),
+                "Municipal Efficiency Score (1-10)": Number(document.getElementById('efficiency').value),
+                "Disposal Method": document.getElementById('disposal').value,
+                "Cost of Waste Management (₹/Ton)": Number(document.getElementById('cost').value),
+                "Awareness Campaigns Count": Number(document.getElementById('awareness').value),
+                "Landfill Capacity (Tons)": Number(document.getElementById('capacity').value),
+                "Year": Number(document.getElementById('year').value),
+                "Landfill Lat": Number(document.getElementById('lat').value),
+                "Landfill Lon": Number(document.getElementById('lon').value)
+            };
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                hide(statusBox);
+                predictBtn.disabled = false;
+
+                if (!res.ok || data.error) {
+                    errorBox.textContent = data.error || 'Prediction failed. Please check inputs and try again.';
+                    show(errorBox);
+                    return;
+                }
+
+                const value = (Array.isArray(data.predictions) ? data.predictions[0] : data["Recycling Rate (%)"] || data.prediction || data.predicted_recycling_rate);
+                predValue.textContent = (value !== undefined && value !== null) ? Number(value).toFixed(2) : '--';
+                show(resultBox);
+
+            } catch (err) {
+                hide(statusBox);
+                predictBtn.disabled = false;
+                errorBox.textContent = err?.message || 'Network error. Please try again.';
+                show(errorBox);
+            }
+        });
+    </script>
+</body>
+
+</html>
