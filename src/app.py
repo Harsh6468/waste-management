@@ -10,7 +10,7 @@ app = Flask(
     static_folder="../static"
     )
 
-MODEL_PATH = os.path.join("models", "trained_model.pkl")
+MODEL_PATH = os.path.join("models", "final_model.pkl")
 
 @app.route("/", methods=["GET"])
 def home():

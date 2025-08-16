@@ -161,7 +161,7 @@ pip install -r requirements.txt
 ---
 
 ## 📌 Notes
-- Ensure your `train.csv` and `test.csv` are inside `data/raw/`.
+- Ensure your `waste_data.csv` is inside `data/raw/`.
 - Model and encoders are automatically saved in the `models/` folder.
 - The best model (Lasso Regression) was chosen after testing multiple regression algorithms.
 
