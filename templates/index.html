@@ -95,16 +95,6 @@
                             required />
                     </div>
 
-                    <div class="field">
-                        <label for="lat">Landfill Lat</label>
-                        <input id="lat" type="number" step="0.000001" placeholder="e.g., 19.0760" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="lon">Landfill Lon</label>
-                        <input id="lon" type="number" step="0.000001" placeholder="e.g., 72.8777" required />
-                    </div>
-
                     <!-- Actions -->
                     <div class="actions">
                         <button id="predictBtn" type="submit" class="btn primary">Predict</button>
@@ -161,9 +151,7 @@
                 "Cost of Waste Management (₹/Ton)": Number(document.getElementById('cost').value),
                 "Awareness Campaigns Count": Number(document.getElementById('awareness').value),
                 "Landfill Capacity (Tons)": Number(document.getElementById('capacity').value),
-                "Year": Number(document.getElementById('year').value),
-                "Landfill Lat": Number(document.getElementById('lat').value),
-                "Landfill Lon": Number(document.getElementById('lon').value)
+                "Year": Number(document.getElementById('year').value)
             };
 
             try {
