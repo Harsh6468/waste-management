@@ -1,185 +1,207 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark"> <!-- default dark -->
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Waste Recycling Rate Predictor</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Tailwind with dark mode enabled -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
-    <div class="app">
-        <header class="header">
-            <div class="brand">
-                <div class="logo">♻️</div>
+
+<body
+    class="min-h-screen flex flex-col transition-colors duration-500 bg-gray-50 text-gray-900 dark:bg-[#0e1430] dark:text-white">
+    <!-- HEADER -->
+    <header
+        class="sticky top-0 z-20 backdrop-blur-md transition-colors duration-500 bg-white/70 border-b border-gray-200 dark:bg-[#121933]/80 dark:border-white/10">
+        <div class="max-w-6xl mx-auto px-4 py-5 flex items-center gap-3 justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-12 h-12 rounded-xl grid place-items-center text-2xl bg-gradient-to-br from-sky-400/25 to-emerald-400/25 border border-white/20">
+                    ♻️
+                </div>
                 <div>
-                    <h1>Recycling Rate Predictor</h1>
-                    <p class="subtitle">Estimate city-level recycling rates using ML</p>
-                </div>
-            </div>
-        </header>
-
-        <main class="content">
-            <section class="card">
-                <h2 class="card-title">Enter City & Waste Details</h2>
-
-                <form id="predictForm" class="grid">
-                    <!-- Row 1 -->
-                    <div class="field">
-                        <label for="city">City/District</label>
-                        <input id="city" name="City/District" type="text" placeholder="e.g., Mumbai" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="wasteType">Waste Type</label>
-                        <select id="wasteType" name="Waste Type" required>
-                            <option value="" disabled selected>Select waste type</option>
-                            <option>Plastic</option>
-                            <option>Organic</option>
-                            <option>E-Waste</option>
-                            <option>Construction</option>
-                            <option>Hazardous</option>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label for="disposal">Disposal Method</label>
-                        <select id="disposal" name="Disposal Method" required>
-                            <option value="" disabled selected>Select method</option>
-                            <option>Recycling</option>
-                            <option>Landfill</option>
-                            <option>Incineration</option>
-                            <option>Composting</option>
-                        </select>
-                    </div>
-
-                    <!-- Row 2 -->
-                    <div class="field">
-                        <label for="wasteGenerated">Waste Generated (Tons/Day)</label>
-                        <input id="wasteGenerated" type="number" step="0.01" min="0" placeholder="e.g., 450" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="popDensity">Population Density (People/km²)</label>
-                        <input id="popDensity" type="number" step="1" min="0" placeholder="e.g., 30000" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="efficiency">Municipal Efficiency Score (1-10)</label>
-                        <input id="efficiency" type="number" step="1" min="1" max="10" placeholder="e.g., 7" required />
-                    </div>
-
-                    <!-- Row 3 -->
-                    <div class="field">
-                        <label for="cost">Cost of Waste Management (₹/Ton)</label>
-                        <input id="cost" type="number" step="0.01" min="0" placeholder="e.g., 1500" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="awareness">Awareness Campaigns Count</label>
-                        <input id="awareness" type="number" step="1" min="0" placeholder="e.g., 12" required />
-                    </div>
-
-                    <div class="field">
-                        <label for="capacity">Landfill Capacity (Tons)</label>
-                        <input id="capacity" type="number" step="1" min="0" placeholder="e.g., 50000" required />
-                    </div>
-
-                    <!-- Row 4 -->
-                    <div class="field">
-                        <label for="year">Year</label>
-                        <input id="year" type="number" step="1" min="2019" max="2030" placeholder="e.g., 2025"
-                            required />
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="actions">
-                        <button id="predictBtn" type="submit" class="btn primary">Predict</button>
-                        <button type="reset" class="btn ghost">Clear</button>
-                    </div>
-                </form>
-
-                <div id="status" class="status hidden">
-                    <div class="spinner"></div>
-                    <span>Predicting…</span>
-                </div>
-
-                <div id="result" class="result hidden">
-                    <h3>Predicted Recycling Rate</h3>
-                    <p class="big-number"><span id="predValue">--</span> %</p>
-                    <p class="hint">This estimate is generated by a Lasso Regression model trained on 2019–2023 data.
+                    <h1 class="text-2xl font-bold tracking-tight">Recycling Rate Predictor</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Estimate city-level recycling rates using ML
                     </p>
                 </div>
+            </div>
+            <button id="themeToggle"
+                class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-200 dark:bg-slate-700 hover:scale-105 transition text-sm font-medium">
+                🌙 Dark
+            </button>
+        </div>
+    </header>
 
-                <div id="errorBox" class="error hidden"></div>
-            </section>
-        </main>
+    <!-- MAIN -->
+    <main class="flex-1 flex justify-center px-4 py-8">
+        <section
+            class="w-full max-w-6xl transition-colors duration-500 bg-white dark:bg-[#121933] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl p-6 sm:p-8">
+            <h2 class="text-xl font-semibold mb-6">Enter City & Waste Details</h2>
 
-        <footer class="footer">
-            <p>Built for the PWSkills Mini-Hackathon · Waste Management & Recycling in Indian Cities</p>
-        </footer>
-    </div>
+            <!-- FORM -->
+            <form id="predictForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- City -->
+                <div class="flex flex-col gap-2">
+                    <label for="city" class="text-sm text-gray-600 dark:text-slate-400">City/District</label>
+                    <input id="city" name="City/District" type="text" placeholder="e.g., Mumbai" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
 
+                <!-- Waste Type -->
+                <div class="flex flex-col gap-2">
+                    <label for="wasteType" class="text-sm text-gray-600 dark:text-slate-400">Waste Type</label>
+                    <select id="wasteType" name="Waste Type" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30">
+                        <option value="" disabled selected>Select waste type</option>
+                        <option>Plastic</option>
+                        <option>Organic</option>
+                        <option>E-Waste</option>
+                        <option>Construction</option>
+                        <option>Hazardous</option>
+                    </select>
+                </div>
+
+                <!-- Disposal Method -->
+                <div class="flex flex-col gap-2">
+                    <label for="disposal" class="text-sm text-gray-600 dark:text-slate-400">Disposal Method</label>
+                    <select id="disposal" name="Disposal Method" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30">
+                        <option value="" disabled selected>Select method</option>
+                        <option>Recycling</option>
+                        <option>Landfill</option>
+                        <option>Incineration</option>
+                        <option>Composting</option>
+                    </select>
+                </div>
+
+                <!-- Waste Generated -->
+                <div class="flex flex-col gap-2">
+                    <label for="wasteGenerated" class="text-sm text-gray-600 dark:text-slate-400">Waste Generated
+                        (Tons/Day)</label>
+                    <input id="wasteGenerated" type="number" step="0.01" min="0" placeholder="e.g., 450" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Population Density -->
+                <div class="flex flex-col gap-2">
+                    <label for="popDensity" class="text-sm text-gray-600 dark:text-slate-400">Population Density
+                        (People/km²)</label>
+                    <input id="popDensity" type="number" step="1" min="0" placeholder="e.g., 30000" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Efficiency Score -->
+                <div class="flex flex-col gap-2">
+                    <label for="efficiency" class="text-sm text-gray-600 dark:text-slate-400">Municipal Efficiency Score
+                        (1-10)</label>
+                    <input id="efficiency" type="number" step="1" min="1" max="10" placeholder="e.g., 7" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Cost -->
+                <div class="flex flex-col gap-2">
+                    <label for="cost" class="text-sm text-gray-600 dark:text-slate-400">Cost of Waste Management
+                        (₹/Ton)</label>
+                    <input id="cost" type="number" step="0.01" min="0" placeholder="e.g., 1500" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Awareness -->
+                <div class="flex flex-col gap-2">
+                    <label for="awareness" class="text-sm text-gray-600 dark:text-slate-400">Awareness Campaigns
+                        Count</label>
+                    <input id="awareness" type="number" step="1" min="0" placeholder="e.g., 12" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Landfill Capacity -->
+                <div class="flex flex-col gap-2">
+                    <label for="capacity" class="text-sm text-gray-600 dark:text-slate-400">Landfill Capacity
+                        (Tons)</label>
+                    <input id="capacity" type="number" step="1" min="0" placeholder="e.g., 50000" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Year -->
+                <div class="flex flex-col gap-2">
+                    <label for="year" class="text-sm text-gray-600 dark:text-slate-400">Year</label>
+                    <input id="year" type="number" step="1" min="2019" max="2030" placeholder="e.g., 2025" required
+                        class="rounded-xl border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-[#0e1430] px-4 py-3 outline-none focus:border-sky-400 focus:ring focus:ring-sky-400/30" />
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-span-full flex flex-wrap gap-3 mt-2">
+                    <button id="predictBtn" type="submit"
+                        class="px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-sky-400 to-emerald-400 text-slate-900 shadow hover:scale-[1.02] transition">
+                        Predict
+                    </button>
+                    <button type="reset"
+                        class="px-6 py-3 rounded-xl border border-gray-300 dark:border-white/15 bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 transition">
+                        Clear
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading -->
+            <div id="status"
+                class="hidden mt-6 p-4 rounded-xl border border-sky-400/30 bg-sky-400/10 flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full border-2 border-white/30 border-t-sky-400 animate-spin"></div>
+                <span>Predicting…</span>
+            </div>
+
+            <!-- Result -->
+            <div id="result" class="hidden mt-6 p-6 rounded-xl border border-emerald-400/30 bg-emerald-400/10">
+                <h3 class="font-semibold mb-1">Predicted Recycling Rate</h3>
+                <p class="text-4xl font-extrabold"><span id="predValue">--</span> %</p>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">This estimate is generated by a Lasso
+                    Regression model trained on 2019–2023 data.</p>
+            </div>
+
+            <!-- Error -->
+            <div id="errorBox"
+                class="hidden mt-6 p-4 rounded-xl border border-red-400/30 bg-red-400/10 text-red-700 dark:text-red-100">
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer
+        class="px-4 py-6 text-center text-gray-600 dark:text-slate-400 border-t border-gray-200 dark:border-white/10">
+        Built for the PWSkills Mini-Hackathon · Waste Management & Recycling in Indian Cities
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
-        const form = document.getElementById('predictForm');
-        const statusBox = document.getElementById('status');
-        const resultBox = document.getElementById('result');
-        const errorBox = document.getElementById('errorBox');
-        const predValue = document.getElementById('predValue');
-        const predictBtn = document.getElementById('predictBtn');
+        const themeToggle = document.getElementById("themeToggle");
 
-        function show(el) { el.classList.remove('hidden'); }
-        function hide(el) { el.classList.add('hidden'); }
+        // Load saved preference
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.remove("dark");
+            themeToggle.textContent = "☀️ Light";
+        }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hide(resultBox);
-            hide(errorBox);
-            show(statusBox);
-            predictBtn.disabled = true;
+        themeToggle.addEventListener("click", () => {
+            document.documentElement.classList.toggle("dark");
 
-            const payload = {
-                "City/District": document.getElementById('city').value.trim(),
-                "Waste Type": document.getElementById('wasteType').value,
-                "Waste Generated (Tons/Day)": Number(document.getElementById('wasteGenerated').value),
-                "Population Density (People/km²)": Number(document.getElementById('popDensity').value),
-                "Municipal Efficiency Score (1-10)": Number(document.getElementById('efficiency').value),
-                "Disposal Method": document.getElementById('disposal').value,
-                "Cost of Waste Management (₹/Ton)": Number(document.getElementById('cost').value),
-                "Awareness Campaigns Count": Number(document.getElementById('awareness').value),
-                "Landfill Capacity (Tons)": Number(document.getElementById('capacity').value),
-                "Year": Number(document.getElementById('year').value)
-            };
-
-            try {
-                const res = await fetch('/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await res.json();
-                hide(statusBox);
-                predictBtn.disabled = false;
-
-                if (!res.ok || data.error) {
-                    errorBox.textContent = data.error || 'Prediction failed. Please check inputs and try again.';
-                    show(errorBox);
-                    return;
-                }
-
-                const value = (Array.isArray(data.predictions) ? data.predictions[0] : data["Recycling Rate (%)"] || data.prediction || data.predicted_recycling_rate);
-                predValue.textContent = (value !== undefined && value !== null) ? Number(value).toFixed(2) : '--';
-                show(resultBox);
-
-            } catch (err) {
-                hide(statusBox);
-                predictBtn.disabled = false;
-                errorBox.textContent = err?.message || 'Network error. Please try again.';
-                show(errorBox);
+            if (document.documentElement.classList.contains("dark")) {
+                localStorage.setItem("theme", "dark");
+                themeToggle.textContent = "🌙 Dark";
+            } else {
+                localStorage.setItem("theme", "light");
+                themeToggle.textContent = "☀️ Light";
             }
         });
     </script>
