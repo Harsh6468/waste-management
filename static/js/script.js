@@ -56,3 +56,22 @@ form.addEventListener('submit', async (e) => {
         show(errorBox);
     }
 });
+
+const themeToggle = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "light") {
+    document.documentElement.classList.remove("dark");
+    themeToggle.textContent = "☀️ Light";
+}
+
+themeToggle.addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
+
+    if (document.documentElement.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "🌙 Dark";
+    } else {
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "☀️ Light";
+    }
+});
