@@ -61,7 +61,7 @@ const themeToggle = document.getElementById("themeToggle");
 
 if (localStorage.getItem("theme") === "light") {
     document.documentElement.classList.remove("dark");
-    themeToggle.textContent = "☀️ Light";
+    themeToggle.textContent = "🌙 Dark";
 }
 
 themeToggle.addEventListener("click", () => {
@@ -69,9 +69,9 @@ themeToggle.addEventListener("click", () => {
 
     if (document.documentElement.classList.contains("dark")) {
         localStorage.setItem("theme", "dark");
-        themeToggle.textContent = "🌙 Dark";
+        themeToggle.textContent = "☀️ Light";
     } else {
         localStorage.setItem("theme", "light");
-        themeToggle.textContent = "☀️ Light";
+        themeToggle.textContent = "🌙 Dark";
     }
 });
