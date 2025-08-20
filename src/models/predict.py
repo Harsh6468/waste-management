@@ -4,11 +4,11 @@ import joblib
 from ..data.preprocess import preprocess_data
 from ..utils.helpers import load_csv
 
-MODEL_PATH = os.path.join("models", "trained_model.pkl")
+MODEL_PATH = os.path.join("models", "final_model.pkl")
 
 def make_predictions(test_path, output_path="predictions.csv"):
     df_test = load_csv(test_path)
-    df_processed = preprocess_data(df_test, is_train=False)
+    df_processed = preprocess_data(df_test)
 
     model = joblib.load(MODEL_PATH)
     preds = model.predict(df_processed)

@@ -7,7 +7,7 @@ import joblib
 from ..data.preprocess import preprocess_data
 from ..utils.helpers import load_csv
 
-MODEL_PATH = os.path.join("models", "trained_model.pkl")
+MODEL_PATH = os.path.join("models", "final_model.pkl")
 
 def train_model(train_path):
     df = load_csv(train_path)
